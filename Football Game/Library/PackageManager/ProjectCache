@@ -5,16 +5,16 @@ m_ProjectFiles:
     m_ContentTrackingEnabled: 1
     m_ModificationDate:
       serializedVersion: 2
-      ticks: 637692037354466822
-    m_Hash: 1877115395
+      ticks: 637692064245987841
+    m_Hash: 3510913004
   m_LockFileStatus:
     m_FilePath: D:/UnityProjects/football_game/Football Game/Packages/packages-lock.json
     m_PathExists: 1
     m_ContentTrackingEnabled: 1
     m_ModificationDate:
       serializedVersion: 2
-      ticks: 637692037576844003
-    m_Hash: 2077531038
+      ticks: 637692064245987841
+    m_Hash: 404655308
 m_EmbeddedPackageManifests:
   m_ManifestsStatus: {}
 m_LocalPackages:
