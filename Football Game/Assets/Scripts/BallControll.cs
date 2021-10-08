@@ -10,6 +10,9 @@ public class BallControll : MonoBehaviour
 
     private const float fieldWidth = 8.0f;
     private const float fieldLength = 12.0f;
+    private const float gatesWidth = 4.0f;
+    private const float borderThickness = 1.0f;
+    
     // Start is called before the first frame update
     void Start()
     {
@@ -24,9 +27,25 @@ public class BallControll : MonoBehaviour
 
         if (Mathf.Abs(transform.position.x + deltaX) > fieldLength / 2 - ballSize / 2)
         {
-            Bounce(true);
+            if (inGates(0, 0))
+            {
+                if (Mathf.Abs(transform.position.y + deltaY) > gatesWidth / 2 - ballSize / 2)
+                {
+                    Bounce(false);
+                }
+                if (Mathf.Abs(transform.position.x + deltaX) > fieldLength / 2 + borderThickness - ballSize / 2)
+                {
+                    transform.position -= transform.position;
+                }
+            }
+            else if (!inGates(deltaX, deltaY))
+            {
+                Bounce(true);
+            }
         }
-        if (Mathf.Abs(transform.position.y + deltaY) > fieldWidth / 2 - ballSize / 2)
+
+        if (Mathf.Abs(transform.position.y + deltaY) > fieldWidth / 2 - ballSize / 2
+            && !inGates(deltaX, deltaY))
         {
             Bounce(false);
         }
@@ -78,5 +97,10 @@ public class BallControll : MonoBehaviour
         Debug.Log(initX);
         Debug.Log(Mathf.Sqrt(1 - initX * initX));
         return new Vector3(initX, Mathf.Sqrt(1 - initX * initX), 0);
+    }
+
+    private bool inGates(float deltaX, float deltaY)
+    {
+        return Mathf.Abs(transform.position.y - deltaY) < gatesWidth / 2 - ballSize / 2;
     }
 }
