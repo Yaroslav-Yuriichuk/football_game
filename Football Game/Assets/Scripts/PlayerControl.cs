@@ -6,7 +6,7 @@ public class PlayerControl : MonoBehaviour
 {
     private float speed = 7.5f;
     private const float allowedMoveDistance = 2.5f;
-    
+
     // Start is called before the first frame update
     void Start()
     {
