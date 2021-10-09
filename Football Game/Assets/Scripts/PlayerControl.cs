@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class PlayerControl : MonoBehaviour
 {
-    private float speed = 7.5f;
-    public static float allowedMoveDistance = 2.5f;
+    private const float speed = 7.5f;
+    public static float allowedMoveDistance = 2.7f;
 
     // Start is called before the first frame update
     void Start()
@@ -24,5 +24,10 @@ public class PlayerControl : MonoBehaviour
         {
             transform.position += new Vector3(0, -speed * Time.deltaTime, 0);
         }
+    }
+
+    public void Reset()
+    {
+        transform.position -= new Vector3(0, transform.position.y, 0);
     }
 }
