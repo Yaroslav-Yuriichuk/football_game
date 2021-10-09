@@ -6,9 +6,10 @@ public class BallControll : MonoBehaviour
 {
     private Vector3 direction;
     private const float speed = 10.0f;
+    private const float deltaSpeed = 0.2f;
     private const float ballSize = 0.5f;
 
-    private const float playerWidth = 1.5f;
+    private const float playerWidth = 1.0f;
     private const float playerThickness = 0.5f;
     
     private GameObject player;
@@ -63,7 +64,8 @@ public class BallControll : MonoBehaviour
             Bounce(false);
         }
 
-        collideWithPlayer(player, deltaX, deltaY);
+        collideWithPlayer(deltaX, deltaY);
+        collideWithEnemy(deltaX, deltaY);
 
         transform.position += speed * Time.deltaTime * direction;
     }
@@ -71,7 +73,7 @@ public class BallControll : MonoBehaviour
     public void Reset()
     {
         transform.position -= transform.position;
-        direction = getInitialDirection();
+        getInitialDirection();
     }
     
     public void Bounce(bool isFromVertical)
@@ -86,35 +88,80 @@ public class BallControll : MonoBehaviour
         }
     }
 
-    private void collideWithPlayer(GameObject player, float deltaX, float deltaY)
+    private void collideWithPlayer(float deltaX, float deltaY)
     {
         bool inHorizontalIntersection = Mathf.Abs(player.transform.position.y - transform.position.y - deltaY)
                                 < playerWidth / 2 + ballSize / 2;
         bool inVerticalIntersection = Mathf.Abs(player.transform.position.x - transform.position.x - deltaX)
                                       < playerThickness / 2 + ballSize / 2;
-        if (transform.position.x < 0 
-            && inHorizontalIntersection && inVerticalIntersection && direction.x < 0)
-        {
-            
-            Bounce(true);
-            
-        }
 
-        /*if (transform.position.x < 0)
+        if (transform.position.x < 0  && inHorizontalIntersection && inVerticalIntersection)
         {
-            float dx1 = transform.position.x - player.transform.position.x - playerThickness / 2 - ballSize / 2;
+            float dx1 = (transform.position.x - player.transform.position.x - playerThickness / 2 - ballSize / 2) / (- direction.x);
             if (Mathf.Abs(transform.position.y + dx1 * direction.y - player.transform.position.y)
-                < playerWidth / 2 + ballSize / 2)
+                < playerWidth / 2 + ballSize / 2
+                && direction.x < 0)
+            {
+                Bounce(true);
+                if (Input.GetKey(KeyCode.UpArrow) && transform.position.y < PlayerControl.allowedMoveDistance)
+                {
+                    direction.y += deltaSpeed;
+                    if (SmallerThanIdentityVector()) direction = CalculateIdentityVector(direction.x, direction.y < 0);
+                }
+                if (Input.GetKey(KeyCode.DownArrow) && transform.position.y > - PlayerControl.allowedMoveDistance)
+                {
+                    direction.y -= deltaSpeed;
+                    if (SmallerThanIdentityVector()) direction = CalculateIdentityVector(direction.x, direction.y < 0);
+                }
+            }
+            else
+            {
+                Bounce(false);
+            }
+
+        }
+    }
+
+    private void collideWithEnemy(float deltaX, float deltaY)
+    {
+        bool inHorizontalIntersection = Mathf.Abs(enemy.transform.position.y - transform.position.y - deltaY)
+                                < playerWidth / 2 + ballSize / 2;
+        bool inVerticalIntersection = Mathf.Abs(enemy.transform.position.x - transform.position.x - deltaX)
+                                      < playerThickness / 2 + ballSize / 2;
+
+        if (transform.position.x > 0 && inHorizontalIntersection && inVerticalIntersection)
+        {
+            float dx1 = (enemy.transform.position.x - transform.position.x - playerThickness / 2 - ballSize / 2) / direction.x;
+            if (Mathf.Abs(transform.position.y + dx1 * direction.y - enemy.transform.position.y)
+                < playerWidth / 2 + ballSize / 2
+                && direction.x > 0)
             {
                 Bounce(true);
             }
-        }*/
+            else
+            {
+                Bounce(false);
+            }
+
+        }
     }
 
-    private Vector3 getInitialDirection()
+    private void getInitialDirection()
     {
         float initX = Random.Range(0.38268f, 0.92388f);
-        return new Vector3(-initX, Mathf.Sqrt(1 - initX * initX), 0);
+        direction = CalculateIdentityVector(initX, Random.Range(0.0f, 1.0f) > 0.5f);
+        direction.x *= -1;
+    }
+
+    private Vector3 CalculateIdentityVector(float x, bool isMovingDown)
+    {
+        float coeficientY = (isMovingDown) ? -1.0f : 1.0f;
+        return new Vector3(x, coeficientY * Mathf.Sqrt(1 - x * x), 0);
+    }
+
+    private bool SmallerThanIdentityVector()
+    {
+        return direction.x * direction.x + direction.y * direction.y < 1.0f;
     }
 
     private bool inGates(float deltaX, float deltaY)
