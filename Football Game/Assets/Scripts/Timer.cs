@@ -8,14 +8,22 @@ public class Timer : MonoBehaviour
     private int seconds;
     private Text txt;
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         txt = this.GetComponent<Text>();
         seconds = 0;
         InvokeRepeating("UpdateTimer", 1.0f, 1.0f);
     }
 
-    void UpdateTimer()
+    public void Reset()
+    {
+        seconds = 0;
+        CancelInvoke();
+        UpdateTimer();
+        InvokeRepeating("UpdateTimer", 1.0f, 1.0f);
+    }
+
+    public void UpdateTimer()
     {
         if (++seconds % 60 < 10)
         {
