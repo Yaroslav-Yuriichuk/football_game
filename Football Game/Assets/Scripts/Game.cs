@@ -26,17 +26,17 @@ public class Game : MonoBehaviour
         enemy = (AI)GameObject.Find("Enemy").GetComponent("AI");
         ball = (BallControl)GameObject.Find("Ball").GetComponent("BallControl");
 
-        ResetGame();
+        ResetGame(true);
     }
 
-    private void ResetGame()
+    private void ResetGame(bool resetBall)
     {
         playerScore = 0;
         enemyScore = 0;
 
         player.Reset();
         enemy.Reset();
-        ball.Reset();
+        if (resetBall) ball.Reset();
 
         UpdateScore();
        ((Timer)GameObject.Find("Timer").GetComponent("Timer")).Reset();
@@ -52,26 +52,34 @@ public class Game : MonoBehaviour
         {
             enemyScore++;
         }
+
         player.Reset();
         enemy.Reset();
         ball.Reset();
 
         UpdateScore();
 
-        if (playerScore > 2 || enemyScore > 2)
+        if (playerScore > 2)
         {
-            ResetGame();
+            IEnumerator showResult = ShowResult(true);
+            // ball.Reset();
+            StartCoroutine(showResult);
+        }
+        else if (enemyScore > 2)
+        {
+            IEnumerator showResult = ShowResult(false);
+            StartCoroutine(showResult);
         }
     }
 
-    /*public IEnumerator ShowResult(bool playerWin)
+    public IEnumerator ShowResult(bool playerWin)
     {
-        yield return new WaitForSeconds(1.0f);
+        // yield return new WaitForSeconds(1.0f);
         Text txt = GameObject.Find("ScoreBoard").GetComponent<Text>();
         txt.text = (playerWin) ? "You Win" : "Enemy Win";
-        ResetGame();
         yield return new WaitForSeconds(1.0f);
-    }*/
+        ResetGame(false);
+    }
 
     // Update is called once per frame
     private void UpdateScore()

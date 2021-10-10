@@ -16,6 +16,8 @@ public class BallControl : MonoBehaviour
     private GameObject enemy;
     private AI enemyAI;
     private Game game;
+
+    private Vector3 animationDelta;
     // private GameObject game;
     // Start is called before the first frame update
     void Awake()
@@ -24,6 +26,8 @@ public class BallControl : MonoBehaviour
         enemy = GameObject.Find("Enemy");
         enemyAI = (AI)enemy.GetComponent("AI");
         game = (Game)GameObject.Find("Main Camera").GetComponent("Game");
+        animationDelta = new Vector3(0.01f, 0.01f, 0.0f);
+
         Reset();
     }
 
@@ -35,7 +39,7 @@ public class BallControl : MonoBehaviour
 
         if (Mathf.Abs(transform.position.x + deltaX) > Game.fieldLength / 2 - ballSize / 2)
         {
-            if (inGates(0, 0))
+            if (InGates(0, 0))
             {
                 if (Mathf.Abs(transform.position.y + deltaY) > Game.gatesWidth / 2 - ballSize / 2)
                 {
@@ -54,20 +58,20 @@ public class BallControl : MonoBehaviour
                     }
                 }
             }
-            else if (!inGates(deltaX, deltaY))
+            else if (!InGates(deltaX, deltaY))
             {
                 Bounce(true);
             }
         }
 
         if (Mathf.Abs(transform.position.y + deltaY) > Game.fieldWidth / 2 - ballSize / 2
-            && !inGates(deltaX, deltaY))
+            && !InGates(deltaX, deltaY))
         {
             Bounce(false);
         }
 
-        collideWithPlayer(deltaX, deltaY);
-        collideWithEnemy(deltaX, deltaY);
+        CollideWithPlayer(deltaX, deltaY);
+        CollideWithEnemy(deltaX, deltaY);
 
         transform.position += speed * Time.deltaTime * direction;
     }
@@ -83,9 +87,24 @@ public class BallControl : MonoBehaviour
     public void Reset()
     {
         transform.position -= transform.position;
-        getInitialDirection();
+        direction -= direction;
+        StartCoroutine("AnimateAppearing");
     }
     
+    private IEnumerator AnimateAppearing()
+    {
+        transform.localScale -= transform.localScale;
+        // transform.localScale.y -= transform.localScale;
+        while (transform.localScale.x < 0.5f)
+        {
+            transform.localScale += animationDelta;
+            yield return new WaitForSeconds(0.01f);
+        }
+        yield return new WaitForSeconds(0.5f);
+        // transform.localScale = new Vector3(0.5f, 0.5f, 0.0f);
+        SetInitialDirection();
+    }
+
     public void Bounce(bool isFromVertical)
     {
         if (isFromVertical)
@@ -98,7 +117,7 @@ public class BallControl : MonoBehaviour
         }
     }
 
-    private void collideWithPlayer(float deltaX, float deltaY)
+    private void CollideWithPlayer(float deltaX, float deltaY)
     {
         bool inHorizontalIntersection = Mathf.Abs(player.transform.position.y - transform.position.y - deltaY)
                                 < playerWidth / 2 + ballSize / 2;
@@ -132,7 +151,7 @@ public class BallControl : MonoBehaviour
         }
     }
 
-    private void collideWithEnemy(float deltaX, float deltaY)
+    private void CollideWithEnemy(float deltaX, float deltaY)
     {
         bool inHorizontalIntersection = Mathf.Abs(enemy.transform.position.y - transform.position.y - deltaY)
                                 < playerWidth / 2 + ballSize / 2;
@@ -167,7 +186,7 @@ public class BallControl : MonoBehaviour
         }
     }
 
-    private void getInitialDirection()
+    private void SetInitialDirection()
     {
         float initX = Random.Range(0.38268f, 0.92388f);
         direction = CalculateIdentityVector(initX, Random.Range(0.0f, 1.0f) > 0.5f);
@@ -185,7 +204,7 @@ public class BallControl : MonoBehaviour
         return direction.x * direction.x + direction.y * direction.y < 1.0f;
     }
 
-    private bool inGates(float deltaX, float deltaY)
+    private bool InGates(float deltaX, float deltaY)
     {
         return Mathf.Abs(transform.position.y - deltaY) < Game.gatesWidth / 2 - ballSize / 2;
     }

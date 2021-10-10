@@ -7,7 +7,7 @@ public class AI : MonoBehaviour
     private BallControl ball;
 
     private int directionY; // 1 - Up, -1 - DOWN
-    private const float speed = 3.0f;
+    private const float speed = 4.7f;
 
     // Start is called before the first frame update
     void Start()
