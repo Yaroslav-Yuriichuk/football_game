@@ -5,7 +5,7 @@ using UnityEngine;
 public class BallControl : MonoBehaviour
 {
     private Vector3 direction;
-    private const float speed = 10.0f;
+    private const float speed = 11.0f;
     private const float deltaSpeed = 0.2f;
     private const float ballSize = 0.5f;
 
@@ -188,7 +188,8 @@ public class BallControl : MonoBehaviour
 
     private void SetInitialDirection()
     {
-        float initX = Random.Range(0.38268f, 0.92388f);
+        // float initX = Random.Range(0.38268f, 0.92388f);
+        float initX = Random.Range(0.6f, 0.92388f);
         direction = CalculateIdentityVector(initX, Random.Range(0.0f, 1.0f) > 0.5f);
         direction.x *= -1;
     }
